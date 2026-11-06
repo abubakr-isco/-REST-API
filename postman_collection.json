@@ -1,0 +1,142 @@
+{
+  "info": {
+    "name": "Барбершоп — услуги (урок 43)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:5000"
+    },
+    {
+      "key": "service_id",
+      "value": "3"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Список услуг — 200",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/services"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Создать услугу — 201",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"Детская стрижка\",\"duration_minutes\":40,\"price_uzs\":70000}"
+        },
+        "url": "{{base_url}}/services"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 201', () => pm.response.to.have.status(201));",
+              "pm.collectionVariables.set('service_id', pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Получить услугу — 200",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/services/{{service_id}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Изменить цену — 200",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"price_uzs\":75000}"
+        },
+        "url": "{{base_url}}/services/{{service_id}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Удалить услугу — 204",
+      "request": {
+        "method": "DELETE",
+        "url": "{{base_url}}/services/{{service_id}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 204', () => pm.response.to.have.status(204));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Удалённая услуга — 404",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/services/{{service_id}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 404', () => pm.response.to.have.status(404));",
+              "pm.test('Unified error', () => pm.expect(pm.response.json()).to.deep.equal({error: 'Not found', code: 404}));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
